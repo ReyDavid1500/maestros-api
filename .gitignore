@@ -4,6 +4,12 @@ build/
 
 ### Environment variables ###
 .env
+
+### RSA keys — never commit real keys ###
+*.pem
+*.key
+*.p8
+keys/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
