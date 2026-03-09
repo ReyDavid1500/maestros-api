@@ -1,0 +1,29 @@
+spring:
+  jpa:
+    show-sql: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/maestros_db
+    username: maestros
+    password: maestros
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/maestros
+    redis:
+      host: localhost
+      port: 6379
+      password: ""
+      ssl:
+        enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.maestros: DEBUG
+
+app:
+  security:
+    require-https: false
+    cors:
+      allowed-origins: "http://localhost:3000,http://localhost:4200"

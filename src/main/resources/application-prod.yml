@@ -1,0 +1,20 @@
+spring:
+  jpa:
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.maestros: INFO
+
+app:
+  security:
+    require-https: true
+    cors:
+      allowed-origins: "https://maestros.app"
