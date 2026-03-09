@@ -37,12 +37,13 @@ dependencies {
 	implementation("com.google.api-client:google-api-client:2.7.0")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.mapstruct:mapstruct:1.6.3")
-	implementation("com.bucket4j:bucket4j-core:8.14.0")
-	implementation("com.bucket4j:bucket4j-redis:8.14.0")
+	implementation("com.bucket4j:bucket4j-core:8.10.1")
+	implementation("com.bucket4j:bucket4j-redis:8.10.1")
 	implementation("com.azure:azure-storage-blob:12.29.1")
 	implementation("com.google.firebase:firebase-admin:9.4.2")
 	implementation("org.jsoup:jsoup:1.18.3")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
@@ -61,4 +62,16 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    val envFile = file(".env")
+    if (envFile.exists()) {
+        envFile.readLines()
+            .filter { line -> line.isNotBlank() && !line.startsWith("#") && line.contains("=") }
+            .forEach { line ->
+                val (key, value) = line.split("=", limit = 2)
+                environment(key.trim(), value.trim())
+            }
+    }
 }
