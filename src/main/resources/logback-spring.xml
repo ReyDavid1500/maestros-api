@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Structured JSON logging for all environments -->
+    <appender name="JSON_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                {"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%-5level","logger":"%logger{36}","thread":"%thread","userId":"%X{userId:-}","ip":"%X{ip:-}","method":"%X{method:-}","path":"%X{path:-}","statusCode":"%X{statusCode:-}","durationMs":"%X{durationMs:-}","message":"%replace(%msg){'\"','\\\"'}","exception":"%replace(%ex{short}){'\"','\\\"'}"}
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="JSON_STDOUT" />
+    </root>
+
+    <!-- Reduce noise from framework internals -->
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <logger name="io.lettuce" level="WARN" />
+
+    <!-- Application-level logging at INFO -->
+    <logger name="com.maestros" level="INFO" />
+
+</configuration>
