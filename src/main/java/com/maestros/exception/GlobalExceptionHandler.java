@@ -49,7 +49,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidToken(InvalidTokenException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(ex.getMessage()));
+        // Surfaced mainly by the /auth/refresh endpoint when the token is expired or
+        // revoked.
+        // Generic message prevents leaking technical details.
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Sesión expirada. Por favor, inicia sesión nuevamente"));
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -61,7 +65,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleAuthentication(AuthenticationException ex) {
         // Always return the same fixed message — never forward ex.getMessage() to avoid
         // leaking details about why authentication failed (enum / oracle protection).
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Credenciales inválidas"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Token de autenticación inválido"));
     }
 
     // -------------------------------------------------------------------------
