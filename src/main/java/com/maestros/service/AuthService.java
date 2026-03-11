@@ -62,8 +62,11 @@ public class AuthService {
         User user;
 
         if (existing.isEmpty()) {
+            String resolvedName = (info.name() != null && !info.name().isBlank())
+                    ? info.name()
+                    : info.email().split("@")[0];
             user = User.builder()
-                    .name(info.name())
+                    .name(resolvedName)
                     .email(info.email())
                     .photoUrl(info.pictureUrl())
                     .role(UserRole.CLIENT)
@@ -78,7 +81,8 @@ public class AuthService {
             }
 
             boolean changed = false;
-            if (!Objects.equals(user.getName(), info.name())) {
+            if (info.name() != null && !info.name().isBlank()
+                    && !Objects.equals(user.getName(), info.name())) {
                 user.setName(info.name());
                 changed = true;
             }

@@ -60,6 +60,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/ratings/maestro/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/google").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                                                 .requestMatchers("/ws/**").permitAll()
                                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
