@@ -15,6 +15,13 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -95,7 +102,44 @@ public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        ObjectMapper cacheObjectMapper = JsonMapper.builder()
+                .findAndAddModules()
+                .activateDefaultTyping(
+                        BasicPolymorphicTypeValidator.builder()
+                                .allowIfSubType(Object.class)
+                                .build(),
+                        ObjectMapper.DefaultTyping.NON_FINAL)
+                .build();
+
+        RedisSerializer<Object> jsonSerializer = new RedisSerializer<>() {
+            @Override
+            public byte[] serialize(Object value) {
+                if (value == null)
+                    return null;
+                try {
+                    return cacheObjectMapper.writeValueAsBytes(value);
+                } catch (JsonProcessingException e) {
+                    throw new SerializationException("Could not serialize cache value", e);
+                }
+            }
+
+            @Override
+            public Object deserialize(byte[] bytes) {
+                if (bytes == null || bytes.length == 0)
+                    return null;
+                try {
+                    return cacheObjectMapper.readValue(bytes, Object.class);
+                } catch (java.io.IOException e) {
+                    throw new SerializationException("Could not deserialize cache value", e);
+                }
+            }
+        };
+
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(jsonSerializer))
                 .disableCachingNullValues();
 
         return RedisCacheManager.builder(connectionFactory)
