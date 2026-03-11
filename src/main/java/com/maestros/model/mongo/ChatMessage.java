@@ -13,7 +13,7 @@ import java.time.Instant;
 @Document(collection = "chat_messages")
 @CompoundIndexes({
         @CompoundIndex(name = "idx_room_created", def = "{'roomId': 1, 'createdAt': 1}"),
-        @CompoundIndex(name = "idx_room_read", def = "{'roomId': 1, 'read': 1}")
+        @CompoundIndex(name = "idx_room_read_sender", def = "{'roomId': 1, 'read': 1, 'senderId': 1}")
 })
 @Data
 @Builder
