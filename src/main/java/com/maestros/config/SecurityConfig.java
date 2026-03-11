@@ -5,6 +5,7 @@ import com.maestros.dto.response.ApiResponse;
 import com.maestros.repository.postgres.UserRepository;
 import com.maestros.security.JwtAuthFilter;
 import com.maestros.security.JwtService;
+import com.maestros.security.RateLimitFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -47,7 +49,8 @@ public class SecurityConfig {
         }
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http, RateLimitFilter rateLimitFilter)
+                        throws Exception {
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -75,6 +78,7 @@ public class SecurityConfig {
                                 .addFilterBefore(
                                                 new JwtAuthFilter(jwtService, userRepository),
                                                 UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(rateLimitFilter, AuthorizationFilter.class)
                                 .exceptionHandling(ex -> ex
                                                 .authenticationEntryPoint((request, response, authException) -> {
                                                         response.setStatus(401);
