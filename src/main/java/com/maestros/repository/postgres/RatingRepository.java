@@ -17,4 +17,6 @@ public interface RatingRepository extends BaseRepository<Rating> {
 
     @Query("SELECT AVG(r.score) FROM Rating r WHERE r.rated.id = :ratedId")
     Double findAverageScoreByRatedId(@Param("ratedId") UUID ratedId);
+
+    long countByRatedId(UUID ratedId);
 }
