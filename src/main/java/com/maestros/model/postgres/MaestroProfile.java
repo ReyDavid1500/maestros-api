@@ -39,6 +39,9 @@ public class MaestroProfile extends BaseEntity {
     @Builder.Default
     private boolean isAvailable = true;
 
+    @Column(length = 100)
+    private String city;
+
     @OneToMany(mappedBy = "maestroProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MaestroService> services = new ArrayList<>();

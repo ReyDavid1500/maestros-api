@@ -10,5 +10,6 @@ import java.util.List;
 public record CreateMaestroProfileRequest(
         @NotBlank @Size(max = 1000) String description,
         @NotEmpty @Valid List<MaestroServiceRequest> services,
-        @NotBlank @Size(max = 20) String phone) {
+        @NotBlank @Size(max = 20) String phone,
+        @Size(max = 100) String city) {
 }

@@ -102,6 +102,7 @@ public class MaestroService {
         MaestroProfile profile = MaestroProfile.builder()
                 .user(user)
                 .description(request.description())
+                .city(request.city())
                 .build();
 
         for (MaestroServiceRequest svcReq : request.services()) {
@@ -190,11 +191,11 @@ public class MaestroService {
             var userJoin = root.join("user", JoinType.INNER);
             predicates.add(cb.isTrue(userJoin.get("active")));
 
-            // city → partial match on description (until explicit city column is added)
+            // city → exact column match on maestro_profiles.city
             if (filters.getCity() != null && !filters.getCity().isBlank()) {
                 String cityPattern = "%" + filters.getCity().toLowerCase() + "%";
                 predicates.add(cb.like(
-                        cb.lower(cb.coalesce(root.get("description"), cb.literal(""))),
+                        cb.lower(cb.coalesce(root.get("city"), cb.literal(""))),
                         cityPattern));
             }
 
