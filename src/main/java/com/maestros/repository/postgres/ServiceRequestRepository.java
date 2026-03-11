@@ -1,10 +1,12 @@
 package com.maestros.repository.postgres;
 
 import com.maestros.base.BaseRepository;
+import com.maestros.model.enums.RequestStatus;
 import com.maestros.model.postgres.ServiceRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +19,8 @@ public interface ServiceRequestRepository extends BaseRepository<ServiceRequest>
     Optional<ServiceRequest> findByIdAndClientId(UUID id, UUID clientId);
 
     Optional<ServiceRequest> findByIdAndMaestroId(UUID id, UUID maestroId);
+
+    boolean existsByClientIdAndStatusIn(UUID clientId, Collection<RequestStatus> statuses);
+
+    boolean existsByMaestroIdAndStatusIn(UUID maestroId, Collection<RequestStatus> statuses);
 }

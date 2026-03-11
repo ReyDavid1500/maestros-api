@@ -12,5 +12,7 @@ public interface UserMapper {
     @Mapping(target = "role", expression = "java(user.getRole().name())")
     @Mapping(target = "createdAt", expression = "java(user.getCreatedAt().toString())")
     @Mapping(target = "hasMaestroProfile", expression = "java(user.getMaestroProfile() != null)")
+    @Mapping(target = "averageRating", ignore = true)
+    @Mapping(target = "totalJobs", ignore = true)
     UserResponse toUserResponse(User user);
 }

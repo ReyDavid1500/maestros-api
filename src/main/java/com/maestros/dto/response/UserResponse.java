@@ -8,5 +8,7 @@ public record UserResponse(
         String phone,
         String role,
         String createdAt,
-        boolean hasMaestroProfile) {
+        boolean hasMaestroProfile,
+        Double averageRating,
+        Integer totalJobs) {
 }
