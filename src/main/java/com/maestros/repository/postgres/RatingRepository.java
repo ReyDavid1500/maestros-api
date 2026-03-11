@@ -7,11 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface RatingRepository extends BaseRepository<Rating> {
 
     Page<Rating> findByRatedIdOrderByCreatedAtDesc(UUID ratedId, Pageable pageable);
+
+    List<Rating> findTop3ByRatedIdOrderByCreatedAtDesc(UUID ratedId);
 
     boolean existsByRaterIdAndServiceRequestId(UUID raterId, UUID serviceRequestId);
 

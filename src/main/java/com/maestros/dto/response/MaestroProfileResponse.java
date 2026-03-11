@@ -12,5 +12,6 @@ public record MaestroProfileResponse(
         Double averageRating,
         Integer totalJobs,
         boolean isAvailable,
-        boolean isVerified) {
+        boolean isVerified,
+        List<RatingResponse> recentRatings) {
 }

@@ -20,6 +20,7 @@ public interface MaestroMapper {
     @Mapping(target = "services", source = "services")
     @Mapping(target = "isAvailable", expression = "java(profile.isAvailable())")
     @Mapping(target = "isVerified", expression = "java(profile.isVerified())")
+    @Mapping(target = "recentRatings", ignore = true)
     MaestroProfileResponse toMaestroProfileResponse(MaestroProfile profile);
 
     @Mapping(target = "id", expression = "java(profile.getId().toString())")

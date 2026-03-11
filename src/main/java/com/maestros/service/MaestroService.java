@@ -6,6 +6,8 @@ import com.maestros.dto.request.UpdateMaestroProfileRequest;
 import com.maestros.dto.request.UpdateServicesRequest;
 import com.maestros.dto.response.MaestroListItemResponse;
 import com.maestros.dto.response.MaestroProfileResponse;
+import com.maestros.dto.response.RatingResponse;
+import com.maestros.dto.response.RatingResponse.RaterInfo;
 import com.maestros.exception.BadRequestException;
 import com.maestros.exception.ConflictException;
 import com.maestros.exception.ForbiddenException;
@@ -16,6 +18,7 @@ import com.maestros.model.enums.UserRole;
 import com.maestros.model.postgres.MaestroProfile;
 import com.maestros.model.postgres.User;
 import com.maestros.repository.postgres.MaestroProfileRepository;
+import com.maestros.repository.postgres.RatingRepository;
 import com.maestros.repository.postgres.ServiceCategoryRepository;
 import com.maestros.repository.postgres.UserRepository;
 import jakarta.persistence.criteria.JoinType;
@@ -46,6 +49,7 @@ public class MaestroService {
     private final MaestroProfileRepository maestroProfileRepository;
     private final UserRepository userRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private final RatingRepository ratingRepository;
     private final MaestroMapper maestroMapper;
 
     // -------------------------------------------------------------------------
@@ -77,7 +81,25 @@ public class MaestroService {
             }
             throw new ResourceNotFoundException("Maestro no encontrado");
         }
-        return maestroMapper.toMaestroProfileResponse(profileOpt.get());
+        MaestroProfile profile = profileOpt.get();
+        MaestroProfileResponse base = maestroMapper.toMaestroProfileResponse(profile);
+
+        List<RatingResponse> recentRatings = ratingRepository
+                .findTop3ByRatedIdOrderByCreatedAtDesc(profile.getUser().getId())
+                .stream()
+                .map(r -> new RatingResponse(
+                        r.getId().toString(),
+                        new RaterInfo(r.getRater().getId().toString(), r.getRater().getName(),
+                                r.getRater().getPhotoUrl()),
+                        r.getScore(),
+                        r.getComment(),
+                        r.getCreatedAt().toString()))
+                .toList();
+
+        return new MaestroProfileResponse(
+                base.id(), base.userId(), base.name(), base.photoUrl(), base.description(),
+                base.services(), base.averageRating(), base.totalJobs(), base.isAvailable(), base.isVerified(),
+                recentRatings);
     }
 
     // -------------------------------------------------------------------------
