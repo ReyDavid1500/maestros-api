@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <include file="db/changelog/changes/V1__create_users.sql"/>
+    <include file="db/changelog/changes/V2__create_service_categories.sql"/>
+    <include file="db/changelog/changes/V3__create_maestro_profiles.sql"/>
+    <include file="db/changelog/changes/V4__create_service_requests.sql"/>
+    <include file="db/changelog/changes/V5__create_ratings.sql"/>
+    <include file="db/changelog/changes/V6__seed_service_categories.sql"/>
+    <include file="db/changelog/changes/V7__add_city_to_maestro_profile.sql"/>
+
+</databaseChangeLog>

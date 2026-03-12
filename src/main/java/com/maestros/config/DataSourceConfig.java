@@ -29,36 +29,36 @@ import java.util.Map;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = { "com.maestros.repository.postgres",
-        "com.maestros.base" }, entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager")
+                "com.maestros.base" }, entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager")
 public class DataSourceConfig {
 
-    @Value("${spring.jpa.show-sql:false}")
-    private boolean showSql;
+        @Value("${spring.jpa.show-sql:false}")
+        private boolean showSql;
 
-    @Primary
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setShowSql(showSql);
-        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
+        @Primary
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+                HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+                vendorAdapter.setShowSql(showSql);
+                vendorAdapter.setDatabasePlatform("org.hibernate.dialect.SQLServerDialect");
 
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setDataSource(dataSource);
-        factory.setPackagesToScan(
-                "com.maestros.model.postgres",
-                "com.maestros.base");
-        factory.setJpaPropertyMap(Map.of(
-                "hibernate.hbm2ddl.auto", "none",
-                "hibernate.physical_naming_strategy",
-                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"));
-        return factory;
-    }
+                LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+                factory.setJpaVendorAdapter(vendorAdapter);
+                factory.setDataSource(dataSource);
+                factory.setPackagesToScan(
+                                "com.maestros.model.postgres",
+                                "com.maestros.base");
+                factory.setJpaPropertyMap(Map.of(
+                                "hibernate.hbm2ddl.auto", "none",
+                                "hibernate.physical_naming_strategy",
+                                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"));
+                return factory;
+        }
 
-    @Primary
-    @Bean
-    public PlatformTransactionManager transactionManager(
-            @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
-        return new JpaTransactionManager(entityManagerFactory);
-    }
+        @Primary
+        @Bean
+        public PlatformTransactionManager transactionManager(
+                        @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
+                return new JpaTransactionManager(entityManagerFactory);
+        }
 }

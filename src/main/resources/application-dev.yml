@@ -3,20 +3,14 @@ spring:
     show-sql: true
 
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: ${SQLSERVER_URL}
+    username: ${SQLSERVER_USERNAME}
+    password: ${SQLSERVER_PASSWORD}
 
   data:
     mongodb:
       uri: ${MONGODB_URI}
       auto-index-creation: true
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
-      ssl:
-        enabled: false
 
 logging:
   level:
@@ -29,6 +23,12 @@ app:
     cors:
       allowed-origins: "http://localhost:3000,http://localhost:4200"
 
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
 management:
   endpoints:
     web:
@@ -37,6 +37,3 @@ management:
   endpoint:
     health:
       show-details: always
-  health:
-    redis:
-      enabled: false

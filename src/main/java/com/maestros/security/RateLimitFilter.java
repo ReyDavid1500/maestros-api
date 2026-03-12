@@ -1,9 +1,8 @@
 package com.maestros.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
-import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,14 +15,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.maestros.security.RateLimitConfig.*;
 import static io.github.bucket4j.Bandwidth.builder;
-import java.time.Duration;
 
 /**
  * Rate limiting filter — runs after {@link JwtAuthFilter} so that the
@@ -35,11 +34,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RateLimitFilter.class);
 
-    private final ProxyManager<String> proxyManager;
+    private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
 
-    public RateLimitFilter(ProxyManager<String> proxyManager, ObjectMapper objectMapper) {
-        this.proxyManager = proxyManager;
+    public RateLimitFilter(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
@@ -60,22 +58,19 @@ public class RateLimitFilter extends OncePerRequestFilter {
         // 1. Determine rate limit group
         String group = resolveGroup(uri, method);
 
-        // 2. Build bucket key
+        // 3. Resolve or create bucket for this key
         RateLimitRule rule = RULES.get(group);
         String bucketKey = "ratelimit:" + group + ":" + resolveKey(request, rule);
 
-        // 3. Build BucketConfiguration (supplier — only evaluated on first access)
-        Supplier<BucketConfiguration> configSupplier = () -> BucketConfiguration.builder()
+        Bucket bucket = buckets.computeIfAbsent(bucketKey, k -> Bucket.builder()
                 .addLimit(builder()
                         .capacity(rule.capacity())
                         .refillIntervally(rule.refillTokens(), Duration.ofSeconds(rule.refillDurationSeconds()))
                         .build())
-                .build();
+                .build());
 
         // 4. Try to consume 1 token
-        ConsumptionProbe probe = proxyManager.builder()
-                .build(bucketKey, configSupplier)
-                .tryConsumeAndReturnRemaining(1);
+        ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         long resetEpochSeconds = Instant.now().getEpochSecond()
                 + TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());

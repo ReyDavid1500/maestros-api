@@ -1,1 +1,0 @@
-ALTER TABLE maestro_profiles ADD COLUMN city VARCHAR(100);

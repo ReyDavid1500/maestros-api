@@ -9,7 +9,6 @@ import com.maestros.exception.InvalidTokenException;
 import com.maestros.model.postgres.User;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyFactory;
@@ -21,8 +20,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class JwtService {
@@ -40,11 +40,7 @@ public class JwtService {
     private RSAPublicKey publicKey;
     private Algorithm algorithm;
 
-    private final StringRedisTemplate redis;
-
-    public JwtService(StringRedisTemplate redis) {
-        this.redis = redis;
-    }
+    private final Map<String, Instant> blacklist = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() throws Exception {
@@ -77,20 +73,12 @@ public class JwtService {
         Instant now = Instant.now();
         String jti = UUID.randomUUID().toString();
 
-        String token = JWT.create()
+        return JWT.create()
                 .withClaim("userId", user.getId().toString())
                 .withJWTId(jti)
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plus(REFRESH_TOKEN_TTL)))
                 .sign(algorithm);
-
-        redis.opsForValue().set(
-                "refresh:" + jti,
-                user.getId().toString(),
-                REFRESH_TOKEN_TTL.toSeconds(),
-                TimeUnit.SECONDS);
-
-        return token;
     }
 
     /**
@@ -135,11 +123,7 @@ public class JwtService {
         long ttlSeconds = Duration.between(Instant.now(), expiry).getSeconds();
 
         if (ttlSeconds > 0) {
-            redis.opsForValue().set(
-                    "blacklist:" + jti,
-                    "revoked",
-                    ttlSeconds,
-                    TimeUnit.SECONDS);
+            blacklist.put(jti, expiry);
         }
     }
 
@@ -147,7 +131,14 @@ public class JwtService {
      * Returns true if the given jti appears in the Redis blacklist.
      */
     public boolean isTokenRevoked(String jti) {
-        return Boolean.TRUE.equals(redis.hasKey("blacklist:" + jti));
+        Instant expiry = blacklist.get(jti);
+        if (expiry == null)
+            return false;
+        if (Instant.now().isAfter(expiry)) {
+            blacklist.remove(jti);
+            return false;
+        }
+        return true;
     }
 
     // -------------------------------------------------------------------------
