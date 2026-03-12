@@ -3,24 +3,23 @@ package com.maestros.websocket;
 import com.maestros.dto.request.SendMessagePayload;
 import com.maestros.model.enums.SenderRole;
 import com.maestros.model.mongo.ChatMessage;
-import com.maestros.model.postgres.ServiceRequest;
+import com.maestros.model.sql.ServiceRequest;
 import com.maestros.repository.mongo.ChatMessageRepository;
-import com.maestros.repository.postgres.ServiceRequestRepository;
+import com.maestros.repository.sql.ServiceRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,12 +28,13 @@ public class ChatWebSocketController {
 
     private static final int MAX_CONTENT_LENGTH = 4000;
     private static final long RATE_LIMIT_MAX = 2;
-    private static final String RATE_KEY_PREFIX = "ws:rate:";
+
+    /** userId -> {windowStartSeconds, count} */
+    private final ConcurrentHashMap<String, long[]> rateLimitMap = new ConcurrentHashMap<>();
 
     private final ChatMessageRepository chatMessageRepository;
     private final ServiceRequestRepository serviceRequestRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final StringRedisTemplate redis;
 
     // -------------------------------------------------------------------------
     // /app/chat.send
@@ -64,12 +64,14 @@ public class ChatWebSocketController {
         }
 
         // 3. Rate limiting — max 2 messages per second per user
-        String rateKey = RATE_KEY_PREFIX + userId;
-        Long count = redis.opsForValue().increment(rateKey);
-        if (count == 1) {
-            redis.expire(rateKey, Duration.ofSeconds(1));
-        }
-        if (count != null && count > RATE_LIMIT_MAX) {
+        long nowSec = Instant.now().getEpochSecond();
+        long[] window = rateLimitMap.compute(userId.toString(), (k, v) -> {
+            if (v == null || v[0] != nowSec)
+                return new long[] { nowSec, 1 };
+            v[1]++;
+            return v;
+        });
+        if (window[1] > RATE_LIMIT_MAX) {
             log.debug("Rate limit exceeded for user [{}]", userId);
             return;
         }

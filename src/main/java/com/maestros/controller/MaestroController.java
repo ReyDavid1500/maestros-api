@@ -7,7 +7,7 @@ import com.maestros.dto.response.ApiResponse;
 import com.maestros.dto.response.MaestroListItemResponse;
 import com.maestros.dto.response.MaestroProfileResponse;
 import com.maestros.model.MaestroSearchFilters;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import com.maestros.security.AuthHelper;
 import com.maestros.service.MaestroService;
 import jakarta.validation.Valid;

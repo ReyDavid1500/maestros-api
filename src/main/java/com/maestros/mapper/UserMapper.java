@@ -1,7 +1,7 @@
 package com.maestros.mapper;
 
 import com.maestros.dto.response.UserResponse;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

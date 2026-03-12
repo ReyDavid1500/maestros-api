@@ -1,4 +1,4 @@
-package com.maestros.model.postgres;
+package com.maestros.model.sql;
 
 import com.maestros.base.BaseEntity;
 import jakarta.persistence.*;

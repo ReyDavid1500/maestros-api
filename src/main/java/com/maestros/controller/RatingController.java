@@ -4,7 +4,7 @@ import com.maestros.dto.request.CreateRatingRequest;
 import com.maestros.dto.response.ApiResponse;
 import com.maestros.dto.response.RatingResponse;
 import com.maestros.dto.response.RatingsPageResponse;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import com.maestros.security.AuthHelper;
 import com.maestros.service.RatingService;
 import jakarta.validation.Valid;

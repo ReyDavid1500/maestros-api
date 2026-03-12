@@ -1,11 +1,12 @@
 package com.maestros.service;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.Notification;
-import com.maestros.repository.postgres.UserRepository;
+import com.maestros.repository.sql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,10 @@ public class NotificationService {
 
     @Transactional
     public void sendPushNotification(String fcmToken, String title, String body, Map<String, String> data) {
+        if (FirebaseApp.getApps().isEmpty()) {
+            log.debug("Firebase not initialized — skipping push notification: title=[{}]", title);
+            return;
+        }
         if (fcmToken == null || fcmToken.isBlank()) {
             log.warn("FCM token is null or empty — skipping push notification: title=[{}]", title);
             return;

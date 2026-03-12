@@ -8,18 +8,16 @@ import com.maestros.exception.ResourceNotFoundException;
 import com.maestros.mapper.UserMapper;
 import com.maestros.model.enums.RequestStatus;
 import com.maestros.model.enums.UserRole;
-import com.maestros.model.postgres.MaestroProfile;
-import com.maestros.model.postgres.User;
-import com.maestros.repository.postgres.ServiceRequestRepository;
-import com.maestros.repository.postgres.UserRepository;
+import com.maestros.model.sql.MaestroProfile;
+import com.maestros.model.sql.User;
+import com.maestros.repository.sql.ServiceRequestRepository;
+import com.maestros.repository.sql.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -28,19 +26,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final ServiceRequestRepository serviceRequestRepository;
     private final UserMapper userMapper;
-    private final StringRedisTemplate redis;
 
     @Value("${app.azure.storage-base-url:}")
     private String azureStorageBaseUrl;
 
     public UserService(UserRepository userRepository,
             ServiceRequestRepository serviceRequestRepository,
-            UserMapper userMapper,
-            StringRedisTemplate redis) {
+            UserMapper userMapper) {
         this.userRepository = userRepository;
         this.serviceRequestRepository = serviceRequestRepository;
         this.userMapper = userMapper;
-        this.redis = redis;
     }
 
     public UserResponse getMyProfile(UUID userId) {
@@ -90,10 +85,6 @@ public class UserService {
 
         user.setActive(false);
         userRepository.save(user);
-
-        // Signal JwtAuthFilter to reject tokens still valid for this user (TTL = max
-        // access token lifetime)
-        redis.opsForValue().set("user:disabled:" + userId, "true", 2, TimeUnit.HOURS);
     }
 
     // -------------------------------------------------------------------------

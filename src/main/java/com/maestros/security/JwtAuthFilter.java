@@ -2,8 +2,8 @@ package com.maestros.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.maestros.exception.InvalidTokenException;
-import com.maestros.model.postgres.User;
-import com.maestros.repository.postgres.UserRepository;
+import com.maestros.model.sql.User;
+import com.maestros.repository.sql.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

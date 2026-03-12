@@ -1,7 +1,7 @@
 package com.maestros.security;
 
 import com.maestros.exception.UnauthorizedException;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

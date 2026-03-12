@@ -1,7 +1,7 @@
-package com.maestros.repository.postgres;
+package com.maestros.repository.sql;
 
 import com.maestros.base.BaseRepository;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

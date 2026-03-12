@@ -3,7 +3,7 @@ package com.maestros.controller;
 import com.maestros.dto.response.ApiResponse;
 import com.maestros.dto.response.ChatMessageResponse;
 import com.maestros.dto.response.ChatRoomResponse;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import com.maestros.security.AuthHelper;
 import com.maestros.service.ChatService;
 import lombok.RequiredArgsConstructor;

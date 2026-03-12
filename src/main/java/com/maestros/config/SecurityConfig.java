@@ -2,7 +2,7 @@ package com.maestros.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maestros.dto.response.ApiResponse;
-import com.maestros.repository.postgres.UserRepository;
+import com.maestros.repository.sql.UserRepository;
 import com.maestros.security.JwtAuthFilter;
 import com.maestros.security.JwtService;
 import com.maestros.security.RateLimitFilter;
@@ -103,7 +103,7 @@ public class SecurityConfig {
         @Bean
         public UserDetailsService userDetailsService() {
                 return username -> {
-                        com.maestros.model.postgres.User user = userRepository.findByEmail(username)
+                        com.maestros.model.sql.User user = userRepository.findByEmail(username)
                                         .orElseThrow(() -> new UsernameNotFoundException(
                                                         "Usuario no encontrado: " + username));
                         return org.springframework.security.core.userdetails.User.builder()

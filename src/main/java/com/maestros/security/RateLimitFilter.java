@@ -153,7 +153,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private String extractUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated()
-                && auth.getPrincipal() instanceof com.maestros.model.postgres.User user) {
+                && auth.getPrincipal() instanceof com.maestros.model.sql.User user) {
             return user.getId().toString();
         }
         return null;

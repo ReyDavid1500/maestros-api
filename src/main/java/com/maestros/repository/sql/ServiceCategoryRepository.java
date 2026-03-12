@@ -1,7 +1,7 @@
-package com.maestros.repository.postgres;
+package com.maestros.repository.sql;
 
 import com.maestros.base.BaseRepository;
-import com.maestros.model.postgres.ServiceCategory;
+import com.maestros.model.sql.ServiceCategory;
 
 import java.util.List;
 

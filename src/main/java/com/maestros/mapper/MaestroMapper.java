@@ -4,9 +4,9 @@ import com.maestros.dto.response.MaestroListItemResponse;
 import com.maestros.dto.response.MaestroProfileResponse;
 import com.maestros.dto.response.MaestroServiceResponse;
 import com.maestros.dto.response.ServiceCategoryResponse;
-import com.maestros.model.postgres.MaestroProfile;
-import com.maestros.model.postgres.MaestroService;
-import com.maestros.model.postgres.ServiceCategory;
+import com.maestros.model.sql.MaestroProfile;
+import com.maestros.model.sql.MaestroService;
+import com.maestros.model.sql.ServiceCategory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

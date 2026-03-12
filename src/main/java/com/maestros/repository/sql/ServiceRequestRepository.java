@@ -1,8 +1,8 @@
-package com.maestros.repository.postgres;
+package com.maestros.repository.sql;
 
 import com.maestros.base.BaseRepository;
 import com.maestros.model.enums.RequestStatus;
-import com.maestros.model.postgres.ServiceRequest;
+import com.maestros.model.sql.ServiceRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

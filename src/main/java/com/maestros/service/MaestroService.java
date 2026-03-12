@@ -15,12 +15,12 @@ import com.maestros.exception.ResourceNotFoundException;
 import com.maestros.mapper.MaestroMapper;
 import com.maestros.model.MaestroSearchFilters;
 import com.maestros.model.enums.UserRole;
-import com.maestros.model.postgres.MaestroProfile;
-import com.maestros.model.postgres.User;
-import com.maestros.repository.postgres.MaestroProfileRepository;
-import com.maestros.repository.postgres.RatingRepository;
-import com.maestros.repository.postgres.ServiceCategoryRepository;
-import com.maestros.repository.postgres.UserRepository;
+import com.maestros.model.sql.MaestroProfile;
+import com.maestros.model.sql.User;
+import com.maestros.repository.sql.MaestroProfileRepository;
+import com.maestros.repository.sql.RatingRepository;
+import com.maestros.repository.sql.ServiceCategoryRepository;
+import com.maestros.repository.sql.UserRepository;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -129,10 +129,10 @@ public class MaestroService {
 
         for (MaestroServiceRequest svcReq : request.services()) {
             UUID catId = UUID.fromString(svcReq.serviceCategoryId());
-            com.maestros.model.postgres.ServiceCategory category = serviceCategoryRepository.findById(catId)
+            com.maestros.model.sql.ServiceCategory category = serviceCategoryRepository.findById(catId)
                     .orElseThrow(() -> new BadRequestException(
                             "Categoría de servicio no válida: " + svcReq.serviceCategoryId()));
-            com.maestros.model.postgres.MaestroService svc = com.maestros.model.postgres.MaestroService.builder()
+            com.maestros.model.sql.MaestroService svc = com.maestros.model.sql.MaestroService.builder()
                     .maestroProfile(profile)
                     .serviceCategory(category)
                     .priceClp(svcReq.priceClp())
@@ -185,10 +185,10 @@ public class MaestroService {
 
         for (MaestroServiceRequest svcReq : request.services()) {
             UUID catId = UUID.fromString(svcReq.serviceCategoryId());
-            com.maestros.model.postgres.ServiceCategory category = serviceCategoryRepository.findById(catId)
+            com.maestros.model.sql.ServiceCategory category = serviceCategoryRepository.findById(catId)
                     .orElseThrow(() -> new BadRequestException(
                             "Categoría de servicio no válida: " + svcReq.serviceCategoryId()));
-            com.maestros.model.postgres.MaestroService svc = com.maestros.model.postgres.MaestroService.builder()
+            com.maestros.model.sql.MaestroService svc = com.maestros.model.sql.MaestroService.builder()
                     .maestroProfile(profile)
                     .serviceCategory(category)
                     .priceClp(svcReq.priceClp())
@@ -230,8 +230,8 @@ public class MaestroService {
             // ms.maestro_profile_id = mp.id AND ms.service_category_id = :id)
             if (filters.getCategoryId() != null) {
                 Subquery<UUID> catSub = query.subquery(UUID.class);
-                Root<com.maestros.model.postgres.MaestroService> svcRoot = catSub
-                        .from(com.maestros.model.postgres.MaestroService.class);
+                Root<com.maestros.model.sql.MaestroService> svcRoot = catSub
+                        .from(com.maestros.model.sql.MaestroService.class);
                 catSub.select(svcRoot.get("maestroProfile").get("id"))
                         .where(cb.and(
                                 cb.equal(svcRoot.get("maestroProfile").get("id"), root.get("id")),
@@ -242,8 +242,8 @@ public class MaestroService {
             // maxPriceClp → at least one service with priceClp <= maxPriceClp
             if (filters.getMaxPriceClp() != null) {
                 Subquery<UUID> priceSub = query.subquery(UUID.class);
-                Root<com.maestros.model.postgres.MaestroService> svcRoot = priceSub
-                        .from(com.maestros.model.postgres.MaestroService.class);
+                Root<com.maestros.model.sql.MaestroService> svcRoot = priceSub
+                        .from(com.maestros.model.sql.MaestroService.class);
                 priceSub.select(svcRoot.get("maestroProfile").get("id"))
                         .where(cb.and(
                                 cb.equal(svcRoot.get("maestroProfile").get("id"), root.get("id")),
@@ -272,8 +272,8 @@ public class MaestroService {
             // duplication)
             if (categoryId != null) {
                 Subquery<UUID> catSub = q.subquery(UUID.class);
-                Root<com.maestros.model.postgres.MaestroService> svcRoot = catSub
-                        .from(com.maestros.model.postgres.MaestroService.class);
+                Root<com.maestros.model.sql.MaestroService> svcRoot = catSub
+                        .from(com.maestros.model.sql.MaestroService.class);
                 catSub.select(svcRoot.get("maestroProfile").get("id"))
                         .where(cb.and(
                                 cb.equal(svcRoot.get("maestroProfile").get("id"), root.get("id")),

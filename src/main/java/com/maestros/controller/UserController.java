@@ -4,7 +4,7 @@ import com.maestros.dto.request.UpdateFcmTokenRequest;
 import com.maestros.dto.request.UpdateUserRequest;
 import com.maestros.dto.response.ApiResponse;
 import com.maestros.dto.response.UserResponse;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import com.maestros.security.AuthHelper;
 import com.maestros.service.UserService;
 import jakarta.validation.Valid;

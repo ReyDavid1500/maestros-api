@@ -1,10 +1,9 @@
 package com.maestros.websocket;
 
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,21 +13,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class WebSocketEventListener {
 
-    private static final String ONLINE_KEY_PREFIX = "ws:online:";
-    private static final String SESSION_KEY_PREFIX = "ws:sessions:";
     private static final int MAX_SESSIONS = 3;
-    private static final Duration ONLINE_TTL = Duration.ofSeconds(35);
-    private static final Duration SESSION_TTL = Duration.ofHours(24);
 
-    private final StringRedisTemplate redis;
+    /** userId → active session count */
+    private final ConcurrentHashMap<String, AtomicInteger> sessionCounts = new ConcurrentHashMap<>();
+
     private final SimpMessagingTemplate messagingTemplate;
 
     @EventListener
@@ -38,24 +36,15 @@ public class WebSocketEventListener {
         if (userId == null)
             return;
 
-        // Presence key — refreshed on each heartbeat reconnect
-        redis.opsForValue().set(ONLINE_KEY_PREFIX + userId, "1", ONLINE_TTL);
+        AtomicInteger counter = sessionCounts.computeIfAbsent(userId, k -> new AtomicInteger(0));
+        int count = counter.incrementAndGet();
 
-        // Concurrent session counter
-        String sessionKey = SESSION_KEY_PREFIX + userId;
-        Long count = redis.opsForValue().increment(sessionKey);
-        if (count == 1) {
-            redis.expire(sessionKey, SESSION_TTL);
-        }
-
-        if (count != null && count > MAX_SESSIONS) {
-            // Immediately decrement — this session is not counted
-            redis.opsForValue().decrement(sessionKey);
+        if (count > MAX_SESSIONS) {
+            counter.decrementAndGet();
 
             String sessionId = accessor.getSessionId();
             log.warn("event=WEBSOCKET_MAX_SESSIONS userId={} sessionId={} activeCount={}", userId, sessionId, count);
 
-            // Notify the over-limit session so the client can react
             if (sessionId != null) {
                 SimpMessageHeaderAccessor notifyAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
                 notifyAccessor.setSessionId(sessionId);
@@ -79,13 +68,9 @@ public class WebSocketEventListener {
         if (userId == null)
             return;
 
-        redis.delete(ONLINE_KEY_PREFIX + userId);
-
-        // Decrement session counter; remove key when it reaches zero
-        String sessionKey = SESSION_KEY_PREFIX + userId;
-        Long remaining = redis.opsForValue().decrement(sessionKey);
-        if (remaining != null && remaining <= 0) {
-            redis.delete(sessionKey);
+        AtomicInteger counter = sessionCounts.get(userId);
+        if (counter != null && counter.decrementAndGet() <= 0) {
+            sessionCounts.remove(userId);
         }
 
         log.info("WebSocket disconnected: userId={}", userId);

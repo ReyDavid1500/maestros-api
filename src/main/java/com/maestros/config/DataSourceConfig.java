@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Explicit JPA configuration. Restricts entity scanning to the postgres model
+ * Explicit JPA configuration. Restricts entity scanning to the sql model
  * package so
  * Hibernate never sees MongoDB documents, and restricts repository scanning so
  * Spring Data
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = { "com.maestros.repository.postgres",
+@EnableJpaRepositories(basePackages = { "com.maestros.repository.sql",
                 "com.maestros.base" }, entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager")
 public class DataSourceConfig {
 
@@ -46,7 +46,7 @@ public class DataSourceConfig {
                 factory.setJpaVendorAdapter(vendorAdapter);
                 factory.setDataSource(dataSource);
                 factory.setPackagesToScan(
-                                "com.maestros.model.postgres",
+                                "com.maestros.model.sql",
                                 "com.maestros.base");
                 factory.setJpaPropertyMap(Map.of(
                                 "hibernate.hbm2ddl.auto", "none",

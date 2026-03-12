@@ -2,7 +2,7 @@ package com.maestros.service;
 
 import com.maestros.dto.response.ServiceCategoryResponse;
 import com.maestros.mapper.MaestroMapper;
-import com.maestros.repository.postgres.ServiceCategoryRepository;
+import com.maestros.repository.sql.ServiceCategoryRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

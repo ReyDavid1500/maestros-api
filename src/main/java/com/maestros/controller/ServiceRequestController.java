@@ -4,7 +4,7 @@ import com.maestros.dto.request.CreateServiceRequestRequest;
 import com.maestros.dto.response.ApiResponse;
 import com.maestros.dto.response.ServiceRequestResponse;
 import com.maestros.model.enums.UserRole;
-import com.maestros.model.postgres.User;
+import com.maestros.model.sql.User;
 import com.maestros.security.AuthHelper;
 import com.maestros.service.ServiceRequestService;
 import jakarta.validation.Valid;

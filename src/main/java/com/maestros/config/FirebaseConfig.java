@@ -17,7 +17,7 @@ import java.util.Base64;
 @Slf4j
 public class FirebaseConfig {
 
-    @Value("${FIREBASE_SERVICE_ACCOUNT_JSON}")
+    @Value("${FIREBASE_SERVICE_ACCOUNT_JSON:}")
     private String firebaseServiceAccountJson;
 
     @Bean
@@ -25,6 +25,11 @@ public class FirebaseConfig {
         if (!FirebaseApp.getApps().isEmpty()) {
             log.info("FirebaseApp already initialized, reusing existing instance");
             return FirebaseApp.getInstance();
+        }
+
+        if (firebaseServiceAccountJson == null || firebaseServiceAccountJson.isBlank()) {
+            log.warn("FIREBASE_SERVICE_ACCOUNT_JSON is not set — push notifications will be disabled");
+            return null;
         }
 
         byte[] decoded = Base64.getDecoder().decode(firebaseServiceAccountJson);

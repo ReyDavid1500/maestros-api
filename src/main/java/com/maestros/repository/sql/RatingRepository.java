@@ -1,7 +1,7 @@
-package com.maestros.repository.postgres;
+package com.maestros.repository.sql;
 
 import com.maestros.base.BaseRepository;
-import com.maestros.model.postgres.Rating;
+import com.maestros.model.sql.Rating;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
