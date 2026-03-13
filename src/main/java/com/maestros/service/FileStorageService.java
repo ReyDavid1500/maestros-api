@@ -4,7 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.maestros.exception.BadRequestException;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class FileStorageService {
 
     private static final long MAX_SIZE_BYTES = 5L * 1024 * 1024; // 5 MB
@@ -25,12 +24,16 @@ public class FileStorageService {
             "image/png", "png",
             "image/webp", "webp");
 
-    private final BlobContainerClient containerClient;
+    @Autowired(required = false)
+    private BlobContainerClient containerClient;
 
-    @Value("${app.azure.storage-base-url}")
+    @Value("${app.azure.storage-base-url:}")
     private String storageBaseUrl;
 
     public String uploadImage(MultipartFile file, String folder) throws IOException {
+        if (containerClient == null) {
+            throw new BadRequestException("El almacenamiento de archivos no está configurado");
+        }
         // 1. Null / empty check
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("El archivo no puede estar vacío");

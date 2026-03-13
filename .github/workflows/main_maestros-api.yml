@@ -25,7 +25,7 @@ jobs:
           distribution: "microsoft"
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: chmod +x gradlew && ./gradlew bootJar
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -53,6 +53,34 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E08FF54CBFEC4B9E80E2CD9BC8E4493C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D305D09E1EE44FA389660429905C7AF2 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_C1728169D8B5420C86C059E433F8161A }}
+
+      - name: Set App Service environment variables
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: "maestros-api"
+          app-settings-json: |
+            [
+              {"name": "SPRING_PROFILES_ACTIVE",              "value": "prod",                                         "slotSetting": false},
+              {"name": "APP_ENV",                             "value": "prod",                                         "slotSetting": false},
+              {"name": "ALLOWED_ORIGINS",                     "value": "${{ secrets.ALLOWED_ORIGINS }}",               "slotSetting": false},
+              {"name": "SQLSERVER_URL",                       "value": "${{ secrets.SQLSERVER_URL }}",                 "slotSetting": false},
+              {"name": "SQLSERVER_USERNAME",                  "value": "${{ secrets.SQLSERVER_USERNAME }}",            "slotSetting": false},
+              {"name": "SQLSERVER_PASSWORD",                  "value": "${{ secrets.SQLSERVER_PASSWORD }}",            "slotSetting": false},
+              {"name": "MONGODB_URI",                         "value": "${{ secrets.MONGODB_URI }}",                   "slotSetting": false},
+              {"name": "JWT_PRIVATE_KEY",                     "value": "${{ secrets.JWT_PRIVATE_KEY }}",               "slotSetting": false},
+              {"name": "JWT_PUBLIC_KEY",                      "value": "${{ secrets.JWT_PUBLIC_KEY }}",                "slotSetting": false},
+              {"name": "JWT_ACCESS_EXPIRATION_SECONDS",       "value": "3600",                                         "slotSetting": false},
+              {"name": "JWT_REFRESH_EXPIRATION_SECONDS",      "value": "2592000",                                      "slotSetting": false},
+              {"name": "GOOGLE_CLIENT_ID",                    "value": "${{ secrets.GOOGLE_CLIENT_ID }}",              "slotSetting": false},
+              {"name": "CLIENT_SECRET",                       "value": "${{ secrets.CLIENT_SECRET }}",                 "slotSetting": false},
+              {"name": "FIREBASE_SERVICE_ACCOUNT_JSON",       "value": "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}", "slotSetting": false},
+              {"name": "AZURE_STORAGE_CONNECTION_STRING",     "value": "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}","slotSetting": false},
+              {"name": "AZURE_STORAGE_CONTAINER_NAME",        "value": "maestros-media",                               "slotSetting": false},
+              {"name": "AZURE_STORAGE_BASE_URL",              "value": "${{ secrets.AZURE_STORAGE_BASE_URL }}",        "slotSetting": false}
+            ]
+
+      - name: Wait for App Service restart
+        run: sleep 30
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
