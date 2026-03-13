@@ -24,6 +24,10 @@
     <!-- Liquibase migrations -->
     <logger name="liquibase" level="INFO" />
 
+    <!-- Hibernate DDL / schema export -->
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.tool.schema" level="DEBUG" />
+
     <!-- Application-level logging at INFO -->
     <logger name="com.maestros" level="INFO" />
 

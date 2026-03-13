@@ -47,6 +47,9 @@ jobs:
           name: java-app
           path: deployment
 
+      - name: Package JAR as ZIP
+        run: cd deployment && zip maestros-api.zip maestros-api.jar
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -88,4 +91,4 @@ jobs:
         with:
           app-name: "maestros-api"
           slot-name: "Production"
-          package: "deployment/maestros-api.jar"
+          package: "deployment/maestros-api.zip"
