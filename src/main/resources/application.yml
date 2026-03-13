@@ -10,10 +10,8 @@ spring:
 
   datasource:
     url: ${SQLSERVER_URL}
-    username: ${SQLSERVER_USERNAME}
-    password: ${SQLSERVER_PASSWORD}
     hikari:
-      connection-timeout: 3000
+      connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
       maximum-pool-size: 20

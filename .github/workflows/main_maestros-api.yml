@@ -67,8 +67,6 @@ jobs:
               {"name": "APP_ENV",                             "value": "prod",                                          "slotSetting": false},
               {"name": "ALLOWED_ORIGINS",                     "value": "${{ secrets.ALLOWED_ORIGINS }}",                "slotSetting": false},
               {"name": "SQLSERVER_URL",                       "value": "${{ secrets.SQLSERVER_URL }}",                  "slotSetting": false},
-              {"name": "SQLSERVER_USERNAME",                  "value": "${{ secrets.SQLSERVER_USERNAME }}",             "slotSetting": false},
-              {"name": "SQLSERVER_PASSWORD",                  "value": "${{ secrets.SQLSERVER_PASSWORD }}",             "slotSetting": false},
               {"name": "MONGODB_URI",                         "value": "${{ secrets.MONGODB_URI }}",                    "slotSetting": false},
               {"name": "JWT_PRIVATE_KEY",                     "value": "${{ secrets.JWT_PRIVATE_KEY }}",                "slotSetting": false},
               {"name": "JWT_PUBLIC_KEY",                      "value": "${{ secrets.JWT_PUBLIC_KEY }}",                 "slotSetting": false},
