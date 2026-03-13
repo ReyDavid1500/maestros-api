@@ -5,7 +5,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: false
 
   datasource:
@@ -26,10 +26,6 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
-
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.xml
-    enabled: true
 
 server:
   port: 8080
