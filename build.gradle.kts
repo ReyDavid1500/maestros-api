@@ -41,6 +41,7 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.18.3")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.liquibase:liquibase-core")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11")
 	annotationProcessor("org.projectlombok:lombok")
