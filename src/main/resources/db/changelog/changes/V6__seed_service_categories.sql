@@ -5,76 +5,76 @@ INSERT INTO
     service_categories (
         id,
         name,
-        icon,
+        icon_name,
         created_at,
         updated_at
     )
 VALUES (
         NEWID (),
-        N 'Limpieza del hogar',
+        N'Limpieza del hogar',
         'sparkles-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Aires acondicionados',
+        N'Aires acondicionados',
         'thermometer-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Reparaciones generales',
+        N'Reparaciones generales',
         'hammer-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Electricidad',
+        N'Electricidad',
         'flash-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Gasfitería / Plomería',
+        N'Gasfitería / Plomería',
         'water-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Pintura',
+        N'Pintura',
         'color-palette-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Mudanzas',
+        N'Mudanzas',
         'car-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Jardinería',
+        N'Jardinería',
         'leaf-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Cerrajería',
+        N'Cerrajería',
         'key-outline',
         GETUTCDATE (),
         GETUTCDATE ()
     ),
     (
         NEWID (),
-        N 'Instalaciones',
+        N'Instalaciones',
         'tv-outline',
         GETUTCDATE (),
         GETUTCDATE ()

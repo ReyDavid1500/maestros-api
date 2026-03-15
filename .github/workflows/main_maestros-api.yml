@@ -80,9 +80,6 @@ jobs:
               {"name": "SPRING_JPA_DATABASE_PLATFORM",                  "value": "org.hibernate.dialect.SQLServerDialect",                        "slotSetting": false},
               {"name": "SPRING_JPA_OPEN_IN_VIEW",                       "value": "false",                                                         "slotSetting": false},
 
-              {"name": "SPRING_LIQUIBASE_ENABLED",                      "value": "true",                                                          "slotSetting": false},
-              {"name": "SPRING_LIQUIBASE_CHANGE_LOG",                   "value": "classpath:db/changelog/db.changelog-master.xml",                "slotSetting": false},
-
               {"name": "JWT_PRIVATE_KEY",                               "value": "${{ secrets.JWT_PRIVATE_KEY }}",                                "slotSetting": false},
               {"name": "JWT_PUBLIC_KEY",                                 "value": "${{ secrets.JWT_PUBLIC_KEY }}",                                 "slotSetting": false},
               {"name": "JWT_ACCESS_EXPIRATION_SECONDS",                  "value": "3600",                                                          "slotSetting": false},
