@@ -77,7 +77,10 @@ jobs:
               {"name": "FIREBASE_SERVICE_ACCOUNT_JSON",       "value": "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}",  "slotSetting": false},
               {"name": "AZURE_STORAGE_CONNECTION_STRING",     "value": "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}", "slotSetting": false},
               {"name": "AZURE_STORAGE_CONTAINER_NAME",        "value": "maestros-media",                                "slotSetting": false},
-              {"name": "AZURE_STORAGE_BASE_URL",              "value": "${{ secrets.AZURE_STORAGE_BASE_URL }}",         "slotSetting": false}
+              {"name": "AZURE_STORAGE_BASE_URL",              "value": "${{ secrets.AZURE_STORAGE_BASE_URL }}",         "slotSetting": false},
+              {"name": "SPRING_LIQUIBASE_ENABLED",            "value": "true",                                          "slotSetting": false},
+              {"name": "SPRING_LIQUIBASE_CHANGE_LOG",         "value": "classpath:db/changelog/db.changelog-master.xml","slotSetting": false},
+              {"name": "SPRING_JPA_HIBERNATE_DDL_AUTO",       "value": "validate",                                      "slotSetting": false}
             ]
 
       - name: Wait for App Service restart
