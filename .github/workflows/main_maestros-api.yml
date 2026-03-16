@@ -65,7 +65,7 @@ jobs:
             [
               {"name": "SPRING_PROFILES_ACTIVE",                        "value": "prod",                                                          "slotSetting": false},
               {"name": "APP_ENV",                                       "value": "prod",                                                          "slotSetting": false},
-              {"name": "ALLOWED_ORIGINS",                               "value": "${{ secrets.ALLOWED_ORIGINS }}",                               "slotSetting": false},
+              {"name": "ALLOWED_ORIGINS",                               "value": "*",                                                             "slotSetting": false},
 
               {"name": "SQLSERVER_URL",                                 "value": "${{ secrets.SQLSERVER_URL }}",                                  "slotSetting": false},
               {"name": "SPRING_DATASOURCE_URL",                         "value": "${{ secrets.SQLSERVER_URL }}",                                  "slotSetting": false},
