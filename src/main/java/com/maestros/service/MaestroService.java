@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,13 +62,13 @@ public class MaestroService {
     }
 
     public Page<MaestroListItemResponse> searchMaestros(String query, String categoryIdStr, Pageable pageable) {
-        UUID categoryId = categoryIdStr != null ? UUID.fromString(categoryIdStr) : null;
+        Long categoryId = categoryIdStr != null ? Long.parseLong(categoryIdStr) : null;
         Specification<MaestroProfile> spec = buildSearchSpec(query, categoryId);
         return maestroProfileRepository.findAll(spec, pageable)
                 .map(maestroMapper::toMaestroListItemResponse);
     }
 
-    public MaestroProfileResponse getMaestroDetail(UUID maestroProfileId) {
+    public MaestroProfileResponse getMaestroDetail(Long maestroProfileId) {
         Optional<MaestroProfile> profileOpt = maestroProfileRepository.findByIdWithDetails(maestroProfileId);
         if (profileOpt.isEmpty()) {
             // Timing-attack protection: delay to normalise response time and prevent ID
@@ -107,7 +106,7 @@ public class MaestroService {
     // -------------------------------------------------------------------------
 
     @Transactional
-    public MaestroProfileResponse createMyProfile(UUID userId, CreateMaestroProfileRequest request) {
+    public MaestroProfileResponse createMyProfile(Long userId, CreateMaestroProfileRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
@@ -128,7 +127,7 @@ public class MaestroService {
                 .build();
 
         for (MaestroServiceRequest svcReq : request.services()) {
-            UUID catId = UUID.fromString(svcReq.serviceCategoryId());
+            Long catId = Long.parseLong(svcReq.serviceCategoryId());
             com.maestros.model.sql.ServiceCategory category = serviceCategoryRepository.findById(catId)
                     .orElseThrow(() -> new BadRequestException(
                             "Categoría de servicio no válida: " + svcReq.serviceCategoryId()));
@@ -146,7 +145,7 @@ public class MaestroService {
     }
 
     @Transactional
-    public MaestroProfileResponse updateMyProfile(UUID userId, UpdateMaestroProfileRequest request) {
+    public MaestroProfileResponse updateMyProfile(Long userId, UpdateMaestroProfileRequest request) {
         MaestroProfile profile = maestroProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil de maestro no encontrado"));
 
@@ -167,7 +166,7 @@ public class MaestroService {
     }
 
     @Transactional
-    public MaestroProfileResponse updateMyServices(UUID userId, UpdateServicesRequest request) {
+    public MaestroProfileResponse updateMyServices(Long userId, UpdateServicesRequest request) {
         MaestroProfile profile = maestroProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil de maestro no encontrado"));
 
@@ -184,7 +183,7 @@ public class MaestroService {
         profile.getServices().clear();
 
         for (MaestroServiceRequest svcReq : request.services()) {
-            UUID catId = UUID.fromString(svcReq.serviceCategoryId());
+            Long catId = Long.parseLong(svcReq.serviceCategoryId());
             com.maestros.model.sql.ServiceCategory category = serviceCategoryRepository.findById(catId)
                     .orElseThrow(() -> new BadRequestException(
                             "Categoría de servicio no válida: " + svcReq.serviceCategoryId()));
@@ -229,7 +228,7 @@ public class MaestroService {
             // categoryId → EXISTS (SELECT 1 FROM maestro_services ms WHERE
             // ms.maestro_profile_id = mp.id AND ms.service_category_id = :id)
             if (filters.getCategoryId() != null) {
-                Subquery<UUID> catSub = query.subquery(UUID.class);
+                Subquery<Long> catSub = query.subquery(Long.class);
                 Root<com.maestros.model.sql.MaestroService> svcRoot = catSub
                         .from(com.maestros.model.sql.MaestroService.class);
                 catSub.select(svcRoot.get("maestroProfile").get("id"))
@@ -241,7 +240,7 @@ public class MaestroService {
 
             // maxPriceClp → at least one service with priceClp <= maxPriceClp
             if (filters.getMaxPriceClp() != null) {
-                Subquery<UUID> priceSub = query.subquery(UUID.class);
+                Subquery<Long> priceSub = query.subquery(Long.class);
                 Root<com.maestros.model.sql.MaestroService> svcRoot = priceSub
                         .from(com.maestros.model.sql.MaestroService.class);
                 priceSub.select(svcRoot.get("maestroProfile").get("id"))
@@ -255,7 +254,7 @@ public class MaestroService {
         };
     }
 
-    private Specification<MaestroProfile> buildSearchSpec(String query, UUID categoryId) {
+    private Specification<MaestroProfile> buildSearchSpec(String query, Long categoryId) {
         return (root, q, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -271,7 +270,7 @@ public class MaestroService {
             // Optional category filter applied as EXISTS subquery (avoids result
             // duplication)
             if (categoryId != null) {
-                Subquery<UUID> catSub = q.subquery(UUID.class);
+                Subquery<Long> catSub = q.subquery(Long.class);
                 Root<com.maestros.model.sql.MaestroService> svcRoot = catSub
                         .from(com.maestros.model.sql.MaestroService.class);
                 catSub.select(svcRoot.get("maestroProfile").get("id"))

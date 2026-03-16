@@ -1,10 +1,8 @@
 package com.maestros.model;
 
-import java.util.UUID;
-
 public class MaestroSearchFilters {
 
-    private UUID categoryId;
+    private Long categoryId;
     private String city;
     private Double minRating;
     private Long maxPriceClp;
@@ -13,11 +11,11 @@ public class MaestroSearchFilters {
     public MaestroSearchFilters() {
     }
 
-    public UUID getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(UUID categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

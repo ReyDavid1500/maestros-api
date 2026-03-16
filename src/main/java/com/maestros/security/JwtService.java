@@ -56,7 +56,7 @@ public class JwtService {
     public String generateAccessToken(User user) {
         Instant now = Instant.now();
         return JWT.create()
-                .withClaim("userId", user.getId().toString())
+                .withClaim("userId", user.getId())
                 .withClaim("role", user.getRole().name())
                 .withJWTId(UUID.randomUUID().toString())
                 .withIssuedAt(Date.from(now))
@@ -74,7 +74,7 @@ public class JwtService {
         String jti = UUID.randomUUID().toString();
 
         return JWT.create()
-                .withClaim("userId", user.getId().toString())
+                .withClaim("userId", user.getId())
                 .withJWTId(jti)
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plus(REFRESH_TOKEN_TTL)))
@@ -108,7 +108,7 @@ public class JwtService {
      * signature.
      */
     public String extractUserId(String token) {
-        return JWT.decode(token).getClaim("userId").asString();
+        return JWT.decode(token).getClaim("userId").asLong().toString();
     }
 
     /**

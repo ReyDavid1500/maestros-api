@@ -2,7 +2,7 @@
 
 --changeset maestros:1 labels:setup
 CREATE TABLE users (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
+    id INT NOT NULL IDENTITY (1, 1),
     name NVARCHAR (100) NOT NULL,
     email NVARCHAR (255) NOT NULL,
     photo_url NVARCHAR (MAX),

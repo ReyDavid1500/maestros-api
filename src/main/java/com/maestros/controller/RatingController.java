@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/ratings")
 @RequiredArgsConstructor
@@ -40,7 +38,7 @@ public class RatingController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, Math.min(size, 20));
-        RatingsPageResponse response = ratingService.getMaestroRatings(UUID.fromString(maestroId), pageable);
+        RatingsPageResponse response = ratingService.getMaestroRatings(Long.parseLong(maestroId), pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

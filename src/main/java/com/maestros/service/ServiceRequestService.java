@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -48,7 +47,7 @@ public class ServiceRequestService {
     // Create
     // -------------------------------------------------------------------------
 
-    public ServiceRequestResponse createServiceRequest(UUID clientId, CreateServiceRequestRequest request) {
+    public ServiceRequestResponse createServiceRequest(Long clientId, CreateServiceRequestRequest request) {
         User client = userRepository.findById(clientId)
                 .filter(User::isActive)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
@@ -63,7 +62,7 @@ public class ServiceRequestService {
             throw new BadRequestException("El horario debe ser al menos 2 horas desde ahora");
         }
 
-        UUID maestroProfileId = UUID.fromString(request.maestroId());
+        Long maestroProfileId = Long.parseLong(request.maestroId());
         MaestroProfile maestroProfile = maestroProfileRepository.findByIdWithDetails(maestroProfileId)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil de maestro no encontrado"));
 
@@ -71,7 +70,7 @@ public class ServiceRequestService {
             throw new BadRequestException("El maestro no está disponible en este momento");
         }
 
-        UUID categoryId = UUID.fromString(request.serviceCategoryId());
+        Long categoryId = Long.parseLong(request.serviceCategoryId());
         boolean offersCategory = maestroProfile.getServices().stream()
                 .anyMatch(s -> s.getServiceCategory().getId().equals(categoryId));
         if (!offersCategory) {
@@ -110,7 +109,7 @@ public class ServiceRequestService {
     // -------------------------------------------------------------------------
 
     @Transactional(readOnly = true)
-    public Page<ServiceRequestResponse> getMyServiceRequests(UUID userId, UserRole role, Pageable pageable) {
+    public Page<ServiceRequestResponse> getMyServiceRequests(Long userId, UserRole role, Pageable pageable) {
         if (role == UserRole.CLIENT) {
             return serviceRequestRepository.findByClientId(userId, pageable)
                     .map(sr -> toResponse(sr, sr.getMaestro().getMaestroProfile()));
@@ -121,7 +120,7 @@ public class ServiceRequestService {
     }
 
     @Transactional(readOnly = true)
-    public ServiceRequestResponse getServiceRequestDetail(UUID requestId, UUID userId) {
+    public ServiceRequestResponse getServiceRequestDetail(Long requestId, Long userId) {
         ServiceRequest sr = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
 
@@ -138,7 +137,7 @@ public class ServiceRequestService {
     // State machine transitions
     // -------------------------------------------------------------------------
 
-    public ServiceRequestResponse acceptRequest(UUID requestId, UUID maestroUserId) {
+    public ServiceRequestResponse acceptRequest(Long requestId, Long maestroUserId) {
         ServiceRequest sr = loadAndVerifyMaestro(requestId, maestroUserId);
 
         if (sr.getStatus() != RequestStatus.PENDING) {
@@ -158,7 +157,7 @@ public class ServiceRequestService {
         return toResponse(sr, maestroProfile);
     }
 
-    public ServiceRequestResponse rejectRequest(UUID requestId, UUID maestroUserId) {
+    public ServiceRequestResponse rejectRequest(Long requestId, Long maestroUserId) {
         ServiceRequest sr = loadAndVerifyMaestro(requestId, maestroUserId);
 
         if (sr.getStatus() != RequestStatus.PENDING) {
@@ -178,7 +177,7 @@ public class ServiceRequestService {
         return toResponse(sr, maestroProfile);
     }
 
-    public ServiceRequestResponse startWork(UUID requestId, UUID maestroUserId) {
+    public ServiceRequestResponse startWork(Long requestId, Long maestroUserId) {
         ServiceRequest sr = loadAndVerifyMaestro(requestId, maestroUserId);
 
         if (sr.getStatus() != RequestStatus.ACCEPTED) {
@@ -198,7 +197,7 @@ public class ServiceRequestService {
         return toResponse(sr, maestroProfile);
     }
 
-    public ServiceRequestResponse completeWork(UUID requestId, UUID maestroUserId) {
+    public ServiceRequestResponse completeWork(Long requestId, Long maestroUserId) {
         ServiceRequest sr = loadAndVerifyMaestro(requestId, maestroUserId);
 
         if (sr.getStatus() != RequestStatus.IN_PROGRESS) {
@@ -223,7 +222,7 @@ public class ServiceRequestService {
         return toResponse(sr, maestroProfile);
     }
 
-    public ServiceRequestResponse cancelRequest(UUID requestId, UUID clientId) {
+    public ServiceRequestResponse cancelRequest(Long requestId, Long clientId) {
         ServiceRequest sr = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
 
@@ -252,7 +251,7 @@ public class ServiceRequestService {
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private ServiceRequest loadAndVerifyMaestro(UUID requestId, UUID maestroUserId) {
+    private ServiceRequest loadAndVerifyMaestro(Long requestId, Long maestroUserId) {
         ServiceRequest sr = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
         if (!sr.getMaestro().getId().equals(maestroUserId)) {

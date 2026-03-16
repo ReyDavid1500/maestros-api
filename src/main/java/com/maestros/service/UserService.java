@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -38,12 +37,12 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public UserResponse getMyProfile(UUID userId) {
+    public UserResponse getMyProfile(Long userId) {
         User user = loadActiveUser(userId);
         return buildUserResponse(user);
     }
 
-    public UserResponse updateMyProfile(UUID userId, UpdateUserRequest request) {
+    public UserResponse updateMyProfile(Long userId, UpdateUserRequest request) {
         User user = loadActiveUser(userId);
 
         if (request.name() != null) {
@@ -63,13 +62,13 @@ public class UserService {
         return buildUserResponse(user);
     }
 
-    public void updateFcmToken(UUID userId, String fcmToken) {
+    public void updateFcmToken(Long userId, String fcmToken) {
         User user = loadActiveUser(userId);
         user.setFcmToken(fcmToken);
         userRepository.save(user);
     }
 
-    public void deactivateMyAccount(UUID userId) {
+    public void deactivateMyAccount(Long userId) {
         User user = loadActiveUser(userId);
 
         List<RequestStatus> activeStatuses = List.of(
@@ -91,7 +90,7 @@ public class UserService {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private User loadActiveUser(UUID userId) {
+    private User loadActiveUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         if (!user.isActive()) {

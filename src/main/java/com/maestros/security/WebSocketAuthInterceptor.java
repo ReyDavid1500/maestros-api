@@ -16,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
@@ -51,7 +50,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         try {
             DecodedJWT claims = jwtService.validateToken(token);
 
-            UUID userId = UUID.fromString(claims.getClaim("userId").asString());
+            Long userId = claims.getClaim("userId").asLong();
             String role = claims.getClaim("role").asString();
 
             User user = userRepository.findById(userId)

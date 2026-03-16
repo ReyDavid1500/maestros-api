@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -34,8 +33,8 @@ public class RatingService {
     private final ServiceRequestRepository serviceRequestRepository;
     private final MaestroProfileRepository maestroProfileRepository;
 
-    public RatingResponse createRating(UUID raterId, CreateRatingRequest request) {
-        UUID serviceRequestId = UUID.fromString(request.serviceRequestId());
+    public RatingResponse createRating(Long raterId, CreateRatingRequest request) {
+        Long serviceRequestId = Long.parseLong(request.serviceRequestId());
 
         ServiceRequest sr = serviceRequestRepository.findById(serviceRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
@@ -44,8 +43,8 @@ public class RatingService {
             throw new BadRequestException("Solo puedes calificar solicitudes completadas");
         }
 
-        UUID clientId = sr.getClient().getId();
-        UUID maestroUserId = sr.getMaestro().getId();
+        Long clientId = sr.getClient().getId();
+        Long maestroUserId = sr.getMaestro().getId();
 
         boolean isClient = raterId.equals(clientId);
         boolean isMaestro = raterId.equals(maestroUserId);
@@ -57,7 +56,7 @@ public class RatingService {
             throw new ConflictException("Ya has calificado esta solicitud");
         }
 
-        UUID ratedId = isClient ? maestroUserId : clientId;
+        Long ratedId = isClient ? maestroUserId : clientId;
 
         String sanitizedComment = null;
         if (request.comment() != null) {
@@ -93,7 +92,7 @@ public class RatingService {
     }
 
     @Transactional(readOnly = true)
-    public RatingsPageResponse getMaestroRatings(UUID maestroUserId, Pageable pageable) {
+    public RatingsPageResponse getMaestroRatings(Long maestroUserId, Pageable pageable) {
         Page<Rating> page = ratingRepository.findByRatedIdOrderByCreatedAtDesc(maestroUserId, pageable);
 
         List<RatingResponse> ratings = page.getContent().stream()

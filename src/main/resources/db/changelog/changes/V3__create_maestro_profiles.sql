@@ -2,8 +2,8 @@
 
 --changeset maestros:3 labels:setup
 CREATE TABLE maestro_profiles (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
-    user_id UNIQUEIDENTIFIER NOT NULL,
+    id INT NOT NULL IDENTITY (1, 1),
+    user_id INT NOT NULL,
     description NVARCHAR (1000),
     average_rating FLOAT NOT NULL DEFAULT 0.0,
     total_jobs INT NOT NULL DEFAULT 0,
@@ -17,9 +17,9 @@ CREATE TABLE maestro_profiles (
 );
 
 CREATE TABLE maestro_services (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
-    maestro_profile_id UNIQUEIDENTIFIER NOT NULL,
-    service_category_id UNIQUEIDENTIFIER NOT NULL,
+    id INT NOT NULL IDENTITY (1, 1),
+    maestro_profile_id INT NOT NULL,
+    service_category_id INT NOT NULL,
     price_clp BIGINT NOT NULL,
     estimated_time NVARCHAR (50) NOT NULL,
     created_at DATETIMEOFFSET NOT NULL,

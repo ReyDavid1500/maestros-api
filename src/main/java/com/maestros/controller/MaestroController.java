@@ -21,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/maestros")
 @RequiredArgsConstructor
@@ -50,7 +48,7 @@ public class MaestroController {
 
         MaestroSearchFilters filters = new MaestroSearchFilters();
         if (categoryId != null) {
-            filters.setCategoryId(UUID.fromString(categoryId));
+            filters.setCategoryId(Long.parseLong(categoryId));
         }
         filters.setCity(city);
         filters.setMinRating(minRating);
@@ -81,7 +79,7 @@ public class MaestroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MaestroProfileResponse>> getMaestroDetail(@PathVariable String id) {
-        UUID maestroId = UUID.fromString(id);
+        Long maestroId = Long.parseLong(id);
         MaestroProfileResponse response = maestroService.getMaestroDetail(maestroId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

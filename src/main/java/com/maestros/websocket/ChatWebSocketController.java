@@ -4,6 +4,7 @@ import com.maestros.dto.request.SendMessagePayload;
 import com.maestros.model.enums.SenderRole;
 import com.maestros.model.mongo.ChatMessage;
 import com.maestros.model.sql.ServiceRequest;
+import com.maestros.model.sql.User;
 import com.maestros.repository.mongo.ChatMessageRepository;
 import com.maestros.repository.sql.ServiceRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,9 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,7 +44,8 @@ public class ChatWebSocketController {
 
     @MessageMapping("/chat.send")
     public void handleMessage(@Payload SendMessagePayload payload, Principal principal) {
-        UUID userId = UUID.fromString(principal.getName());
+        User authenticatedUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        Long userId = authenticatedUser.getId();
         String roomId = payload.roomId();
         String content = payload.content();
 
@@ -97,7 +100,8 @@ public class ChatWebSocketController {
 
     @MessageMapping("/chat.typing")
     public void handleTypingIndicator(@Payload Map<String, String> payload, Principal principal) {
-        UUID userId = UUID.fromString(principal.getName());
+        User authenticatedUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        Long userId = authenticatedUser.getId();
         String roomId = payload.get("roomId");
         if (roomId == null)
             return;
@@ -123,17 +127,17 @@ public class ChatWebSocketController {
      * loads the ServiceRequest, and verifies the given userId is a participant.
      * Returns null if invalid or unauthorised.
      */
-    private RoomParts parseAndValidateRoom(String roomId, UUID userId) {
+    private RoomParts parseAndValidateRoom(String roomId, Long userId) {
         if (roomId == null)
             return null;
         String[] parts = roomId.split("_");
         if (parts.length != 3)
             return null;
 
-        UUID serviceRequestId;
+        Long serviceRequestId;
         try {
-            serviceRequestId = UUID.fromString(parts[2]);
-        } catch (IllegalArgumentException e) {
+            serviceRequestId = Long.parseLong(parts[2]);
+        } catch (NumberFormatException e) {
             return null;
         }
 

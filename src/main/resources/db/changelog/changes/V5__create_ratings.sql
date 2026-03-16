@@ -2,10 +2,10 @@
 
 --changeset maestros:5 labels:setup
 CREATE TABLE ratings (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
-    rater_id UNIQUEIDENTIFIER NOT NULL,
-    rated_id UNIQUEIDENTIFIER NOT NULL,
-    service_request_id UNIQUEIDENTIFIER NOT NULL,
+    id INT NOT NULL IDENTITY (1, 1),
+    rater_id INT NOT NULL,
+    rated_id INT NOT NULL,
+    service_request_id INT NOT NULL,
     score INT NOT NULL,
     comment NVARCHAR (500),
     created_at DATETIMEOFFSET NOT NULL,

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -114,8 +113,8 @@ public class AuthService {
             throw new InvalidTokenException("Provided token is not a refresh token");
         }
 
-        String userId = decoded.getClaim("userId").asString();
-        User user = userRepository.findById(UUID.fromString(userId))
+        Long userId = decoded.getClaim("userId").asLong();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("User not found for refresh token"));
 
         if (!user.isActive()) {

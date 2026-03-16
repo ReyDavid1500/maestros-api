@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -47,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             DecodedJWT claims = jwtService.validateToken(token);
 
-            UUID userId = UUID.fromString(claims.getClaim("userId").asString());
+            Long userId = claims.getClaim("userId").asLong();
             String role = claims.getClaim("role").asString();
 
             User user = userRepository.findById(userId).orElse(null);
@@ -59,7 +58,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         List.of(new SimpleGrantedAuthority("ROLE_" + role)));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                MDC.put("userId", userId.toString());
+                MDC.put("userId", String.valueOf(userId));
                 MDC.put("ip", getClientIp(request));
             }
 

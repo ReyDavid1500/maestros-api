@@ -2,10 +2,10 @@
 
 --changeset maestros:4 labels:setup
 CREATE TABLE service_requests (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
-    client_id UNIQUEIDENTIFIER NOT NULL,
-    maestro_id UNIQUEIDENTIFIER NOT NULL,
-    service_category_id UNIQUEIDENTIFIER NOT NULL,
+    id INT NOT NULL IDENTITY (1, 1),
+    client_id INT NOT NULL,
+    maestro_id INT NOT NULL,
+    service_category_id INT NOT NULL,
     description NVARCHAR (1000) NOT NULL,
     address_street NVARCHAR (200) NOT NULL,
     address_number NVARCHAR (20) NOT NULL,

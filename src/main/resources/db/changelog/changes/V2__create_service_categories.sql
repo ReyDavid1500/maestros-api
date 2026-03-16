@@ -2,7 +2,7 @@
 
 --changeset maestros:2 labels:setup
 CREATE TABLE service_categories (
-    id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID (),
+    id INT NOT NULL IDENTITY (1, 1),
     name NVARCHAR (100) NOT NULL,
     icon_name NVARCHAR (100) NOT NULL,
     display_order INT,
