@@ -87,7 +87,13 @@ public class ChatWebSocketController {
                 .content(sanitized)
                 .createdAt(Instant.now())
                 .build();
-        message = chatMessageRepository.save(message);
+        try {
+            message = chatMessageRepository.save(message);
+            log.debug("Message saved to MongoDB [id={}] for room [{}]", message.getId(), roomId);
+        } catch (Exception e) {
+            log.error("Failed to save message to MongoDB for room [{}]: {}", roomId, e.getMessage(), e);
+            return;
+        }
 
         // 5. Broadcast to room topic
         Map<String, Object> response = buildMessageResponse(message);

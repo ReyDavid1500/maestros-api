@@ -125,6 +125,29 @@ public class ChatService {
                                         unreadCount));
                 }
 
+                // 5. Add rooms that exist in SQL but have no messages yet
+                Set<String> roomsWithMessages = rooms.stream()
+                                .map(ChatRoomResponse::roomId)
+                                .collect(Collectors.toSet());
+
+                for (Map.Entry<String, ServiceRequest> entry : roomToRequest.entrySet()) {
+                        if (!roomsWithMessages.contains(entry.getKey())) {
+                                ServiceRequest sr = entry.getValue();
+                                User otherUser = sr.getClient().getId().equals(userId)
+                                                ? sr.getMaestro()
+                                                : sr.getClient();
+                                rooms.add(new ChatRoomResponse(
+                                                entry.getKey(),
+                                                sr.getId().toString(),
+                                                new ChatRoomResponse.OtherParticipant(
+                                                                otherUser.getId().toString(),
+                                                                otherUser.getName(),
+                                                                otherUser.getPhotoUrl()),
+                                                null,
+                                                0));
+                        }
+                }
+
                 return rooms;
         }
 
