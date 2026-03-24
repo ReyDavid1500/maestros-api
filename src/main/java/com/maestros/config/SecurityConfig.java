@@ -128,7 +128,7 @@ public class SecurityConfig {
                                 "X-RateLimit-Remaining",
                                 "X-RateLimit-Reset",
                                 "Retry-After"));
-                config.setAllowCredentials(true);
+                config.setAllowCredentials(false);
                 config.setMaxAge(3600L);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
