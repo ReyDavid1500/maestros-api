@@ -16,9 +16,8 @@ spring:
       max-lifetime: 1800000
       maximum-pool-size: 20
 
-  data:
-    mongodb:
-      uri: ${MONGODB_URI}
+  mongodb:
+    uri: ${MONGODB_URI}
 
   servlet:
     multipart:
